@@ -2,10 +2,8 @@ use eframe::egui;
 
 mod biology;
 mod simulation;
+mod environment;
 
-pub mod compounds;
-pub mod species;
-pub mod enzymes;
 
 fn main() -> eframe::Result {
     let options = eframe::NativeOptions::default();
