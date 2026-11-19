@@ -7,6 +7,10 @@ pub struct Colony {
   pub active: bool,
 }
 
-fn grow(&mut self) {
-  self.biomass += self.species.base_growth_rate;
+impl Colony {
+  pub fn grow(&mut self) {
+    if self.active {
+      self.biomass += self.species.base_growth_rate;
+    }
+  }
 }

@@ -4,6 +4,12 @@ use std::time::{Duration, Instant};
 use crate::simulation::tick::tick;
 use crate::simulation::world::World;
 
+#[derive(PartialEq)]
+enum Menu {
+  Home,
+  Pot,
+}
+
 pub struct Underbloom {
   label: String,
   value: f32,
@@ -11,6 +17,7 @@ pub struct Underbloom {
   world: World,
   last_tick: Instant,
   tick_accumulator: Duration,
+  current_menu: Menu,
 }
 
 impl Default for Underbloom {
@@ -21,10 +28,11 @@ impl Default for Underbloom {
 
       world: World {
         time: 0,
-        areas: Vec::new(),
+        pots: Vec::new(),
       },
       last_tick: Instant::now(),
       tick_accumulator: Duration::ZERO,
+      current_menu: Menu::Home,
     }
   }
 }
@@ -46,22 +54,34 @@ impl eframe::App for Underbloom {
 
     ui.ctx()
       .request_repaint_after(tick_duration - self.tick_accumulator);
-    egui::CentralPanel::default().show(ui, |ui| {
-      ui.heading("Underbloom");
 
+    egui::Panel::top("header").show(ui, |ui| {
+      ui.horizontal(|ui| {
+        ui.heading("Underbloom");
+        ui.separator();
+      });
+    });
+
+    egui::CentralPanel::default().show(ui, |ui| {
       ui.horizontal(|ui| {
         ui.label("Write something: ");
         ui.text_edit_singleline(&mut self.label);
       });
+      ui.horizontal(|ui| {
+        ui.add(egui::Slider::new(&mut self.value, 0.0..=10.0).text("value"));
 
-      ui.add(egui::Slider::new(&mut self.value, 0.0..=10.0).text("value"));
+        if ui.button("hi").clicked() {
+          self.value += 1.0;
+        }
 
-      if ui.button("hi").clicked() {
-        self.value += 1.0;
-      }
+        ui.label(format!("Hello '{}', value: {}", self.label, self.value));
+      });
 
-      ui.label(format!("Hello '{}', value: {}", self.label, self.value));
-      ui.label(format!("Ticks: {}", self.world.time));
+      egui::Panel::bottom("footer").show(ui, |ui| {
+        ui.horizontal(|ui| {
+          ui.label(format!("World age: {}h", self.world.time));
+        });
+      });
     });
   }
 }

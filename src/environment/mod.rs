@@ -1,2 +1,2 @@
-pub mod area;
+pub mod pot;
 pub mod substrate;
