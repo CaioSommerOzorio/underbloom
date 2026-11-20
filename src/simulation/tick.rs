@@ -3,9 +3,9 @@ use crate::simulation::world::World;
 pub fn tick(world: &mut World) {
   world.time += 1;
 
-  for area in &mut world.pots {
-    for colony in &mut area.colonies {
-      colony.grow();
+  for pot in &mut world.pots {
+    for colony in &mut pot.colonies {
+      colony.grow(pot);
     }
   }
 }
