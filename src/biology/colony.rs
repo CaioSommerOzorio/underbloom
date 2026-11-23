@@ -1,5 +1,5 @@
 use crate::biology::species::Species;
-use crate::environment::pot::Pot;
+use crate::environment::substrate::Substrate;
 
 pub struct Colony {
   pub species: Species,
@@ -9,14 +9,14 @@ pub struct Colony {
 }
 
 impl Colony {
-  pub fn grow(&mut self, pot: &Pot) {
+  pub fn grow(&self, temp: f32, substrate: Substrate) -> f32 {
     if !self.active {
-      return;
+      return 0.0;
     }
     let species = &self.species;
-    let temp_diff = (pot.temp - species.temp).abs();
-    let temp_modifier = (1.0 - temp_diff / species.temp_resistance).clamp(0.0, 1.0);
+    let temp_diff = (temp - species.optimalTemp).abs();
+    let temp_modifier = (1.0 - temp_diff / species.tempResistance).clamp(0.0, 1.0);
     let growth_modifier = temp_modifier;
-    self.biomass += self.biomass * species.base_growth_rate * growth_modifier;
+    return self.biomass * species.baseGrowthRate * growth_modifier;
   }
 }

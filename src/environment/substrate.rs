@@ -1,8 +1,8 @@
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Substrate {
-    Hardwood,
-    Softwood,
-    Soil,
-    Stone,
-    LeafLitter,
+  Hardwood,
+  Softwood,
+  Soil,
+  Stone,
+  LeafLitter,
 }

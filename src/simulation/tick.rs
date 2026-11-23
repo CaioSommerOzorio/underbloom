@@ -5,7 +5,7 @@ pub fn tick(world: &mut World) {
 
   for pot in &mut world.pots {
     for colony in &mut pot.colonies {
-      colony.grow(pot);
+      colony.biomass += colony.grow(pot.temp, pot.substrate);
     }
   }
 }

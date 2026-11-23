@@ -43,11 +43,11 @@ fn kingSpot() -> Species {
     optimalTemp: 22.5,
     tempResistance: 0.5,
 
-    optimalMoisture: 80,
-    moistureResistance: 5,
+    optimalMoisture: 80.0,
+    moistureResistance: 5.0,
 
     baseGrowthRate: 0.5,
-    substratePreferences: HashMap::from([
+    substrateGrowth: HashMap::from([
       (Substrate::Hardwood, 1.5),
       (Substrate::Softwood, 1.25),
       (Substrate::Soil, 0.75),
