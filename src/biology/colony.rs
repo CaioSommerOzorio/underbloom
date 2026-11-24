@@ -14,9 +14,9 @@ impl Colony {
       return 0.0;
     }
     let species = &self.species;
-    let temp_diff = (temp - species.optimalTemp).abs();
-    let temp_modifier = (1.0 - temp_diff / species.tempResistance).clamp(0.0, 1.0);
+    let temp_diff = (temp - species.optimal_temp).abs();
+    let temp_modifier = (1.0 - temp_diff / species.temp_resistance).clamp(0.0, 1.0);
     let growth_modifier = temp_modifier;
-    return self.biomass * species.baseGrowthRate * growth_modifier;
+    return self.biomass * species.base_growth_rate * growth_modifier;
   }
 }

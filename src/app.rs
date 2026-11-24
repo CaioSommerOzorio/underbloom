@@ -30,6 +30,7 @@ impl Default for Underbloom {
         time: 0,
         pots: Vec::new(),
       },
+
       last_tick: Instant::now(),
       tick_accumulator: Duration::ZERO,
       current_menu: Menu::Home,
@@ -55,33 +56,31 @@ impl eframe::App for Underbloom {
     ui.ctx()
       .request_repaint_after(tick_duration - self.tick_accumulator);
 
-    egui::Panel::top("header").show(ui, |ui| {
+    egui::Panel::bottom("footer").show(ui, |ui| {
       ui.horizontal(|ui| {
-        ui.heading("Underbloom");
-        ui.separator();
+        ui.label(format!("World age: {}h", self.world.time));
       });
     });
 
-    egui::CentralPanel::default().show(ui, |ui| {
-      ui.horizontal(|ui| {
-        ui.label("Write something: ");
-        ui.text_edit_singleline(&mut self.label);
-      });
-      ui.horizontal(|ui| {
-        ui.add(egui::Slider::new(&mut self.value, 0.0..=10.0).text("value"));
-
-        if ui.button("hi").clicked() {
-          self.value += 1.0;
-        }
-
-        ui.label(format!("Hello '{}', value: {}", self.label, self.value));
-      });
-
-      egui::Panel::bottom("footer").show(ui, |ui| {
+    if self.current_menu == Menu::Home {
+      egui::Panel::top("header").show(ui, |ui| {
         ui.horizontal(|ui| {
-          ui.label(format!("World age: {}h", self.world.time));
+          ui.heading("Underbloom");
+          ui.separator();
+          ui.heading("Pots");
         });
       });
-    });
+
+      egui::CentralPanel::default().show(ui, |ui| {
+        for i in 0..self.world.pots.len() {
+          ui.horizontal(|ui| {
+            ui.label(format!("Pot {}", i));
+          });
+        }
+        if ui.add(egui::Button::new("Add a pot")).clicked() {
+          self.world.add_pot();
+        }
+      });
+    }
   }
 }

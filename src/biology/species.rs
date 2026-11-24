@@ -7,18 +7,18 @@ pub struct Species {
   pub name: String,
 
   // Celcius
-  pub optimalTemp: f32,
-  pub tempResistance: f32,
+  pub optimal_temp: f32,
+  pub temp_resistance: f32,
 
   // Percentage
-  pub optimalMoisture: f32,
-  pub moistureResistance: f32,
+  pub optimal_moisture: f32,
+  pub moisture_resistance: f32,
 
   // Grams
-  pub baseGrowthRate: f32,
-  pub substrateGrowth: HashMap<Substrate, f32>,
+  pub base_growth_rate: f32,
+  pub substrate_growth: HashMap<Substrate, f32>,
 
-  pub baseSporeProduction: f32,
+  pub base_spore_production: f32,
   // to introduce:
   // - nutrients
   // - enzyme production
@@ -36,24 +36,24 @@ pub struct Species {
 
 // King spot fungus
 // basically it's the base fungus
-fn kingSpot() -> Species {
+fn king_spot() -> Species {
   Species {
     name: String::from("King Spot Fungus"),
 
-    optimalTemp: 22.5,
-    tempResistance: 0.5,
+    optimal_temp: 22.5,
+    temp_resistance: 0.5,
 
-    optimalMoisture: 80.0,
-    moistureResistance: 5.0,
+    optimal_moisture: 80.0,
+    moisture_resistance: 5.0,
 
-    baseGrowthRate: 0.5,
-    substrateGrowth: HashMap::from([
+    base_growth_rate: 0.5,
+    substrate_growth: HashMap::from([
       (Substrate::Hardwood, 1.5),
       (Substrate::Softwood, 1.25),
       (Substrate::Soil, 0.75),
       (Substrate::LeafLitter, 0.25),
     ]),
 
-    baseSporeProduction: 0.05,
+    base_spore_production: 0.05,
   }
 }
