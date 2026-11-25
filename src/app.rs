@@ -11,21 +11,16 @@ enum Menu {
 }
 
 pub struct Underbloom {
-  label: String,
-  value: f32,
-
   world: World,
   last_tick: Instant,
   tick_accumulator: Duration,
   current_menu: Menu,
+  pot_view: u64,
 }
 
 impl Default for Underbloom {
   fn default() -> Self {
     Self {
-      label: String::new(),
-      value: 0.0,
-
       world: World {
         time: 0,
         pots: Vec::new(),
@@ -34,6 +29,7 @@ impl Default for Underbloom {
       last_tick: Instant::now(),
       tick_accumulator: Duration::ZERO,
       current_menu: Menu::Home,
+      pot_view: u64,
     }
   }
 }
@@ -74,12 +70,28 @@ impl eframe::App for Underbloom {
       egui::CentralPanel::default().show(ui, |ui| {
         for i in 0..self.world.pots.len() {
           ui.horizontal(|ui| {
-            ui.label(format!("Pot {}", i));
+            ui.collapsing(format!("Pot {}", i), |ui| {
+              ui.label(format!("Temperature: {}", &self.world.pots[i].temp));
+              ui.label(format!("Moisture: {}", &self.world.pots[i].moisture));
+              if ui.add(egui::Button::new("View pot")).clicked() {
+                self.pot_view = i;
+                self.current_menu = Menu::Pot;
+              }
+            });
           });
         }
+        ui.add_space(12.0);
         if ui.add(egui::Button::new("Add a pot")).clicked() {
           self.world.add_pot();
         }
+      });
+    } else if self.current_menu == Menu::Pot {
+      egui::Panel::top("header").show(ui, |ui| {
+        ui.horizontal(|ui| {
+          ui.heading("Underbloom");
+          ui.separator();
+          ui.heading(format!("Pot {}", self.pot_view));
+        });
       });
     }
   }
