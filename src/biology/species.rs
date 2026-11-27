@@ -2,7 +2,6 @@ use crate::environment::substrate::Substrate;
 use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
-
 pub struct Species {
   pub name: String,
 
@@ -41,7 +40,7 @@ fn king_spot() -> Species {
     name: String::from("King Spot Fungus"),
 
     optimal_temp: 22.5,
-    temp_resistance: 0.5,
+    temp_resistance: 2.5,
 
     optimal_moisture: 80.0,
     moisture_resistance: 5.0,
@@ -56,4 +55,12 @@ fn king_spot() -> Species {
 
     base_spore_production: 0.05,
   }
+}
+
+pub fn all_species() -> Vec<Species> {
+  vec![king_spot()]
+}
+
+pub fn all_species_names() -> Vec<String> {
+  vec![king_spot().name]
 }

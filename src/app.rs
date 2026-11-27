@@ -1,6 +1,8 @@
 use eframe::egui;
+use egui_autocomplete::AutoCompleteTextEdit;
 use std::time::{Duration, Instant};
 
+use crate::biology::species::all_species_names;
 use crate::simulation::tick::tick;
 use crate::simulation::world::World;
 
@@ -8,6 +10,7 @@ use crate::simulation::world::World;
 enum Menu {
   Home,
   Pot,
+  SpeciesInfo,
 }
 
 pub struct Underbloom {
@@ -15,7 +18,9 @@ pub struct Underbloom {
   last_tick: Instant,
   tick_accumulator: Duration,
   current_menu: Menu,
-  pot_view: usize,
+  pot_inspect: usize,
+  species_inspect: String,
+  buffer: String,
 }
 
 impl Default for Underbloom {
@@ -29,7 +34,9 @@ impl Default for Underbloom {
       last_tick: Instant::now(),
       tick_accumulator: Duration::ZERO,
       current_menu: Menu::Home,
-      pot_view: 0,
+      pot_inspect: 0,
+      species_inspect: String::new(),
+      buffer: String::new(),
     }
   }
 }
@@ -74,7 +81,7 @@ impl eframe::App for Underbloom {
               ui.label(format!("Temperature: {}", &self.world.pots[i].temp));
               ui.label(format!("Moisture: {}", &self.world.pots[i].moisture));
               if ui.add(egui::Button::new("View pot")).clicked() {
-                self.pot_view = i;
+                self.pot_inspect = i;
                 self.current_menu = Menu::Pot;
               }
             });
@@ -90,21 +97,46 @@ impl eframe::App for Underbloom {
         ui.horizontal(|ui| {
           ui.heading("Underbloom");
           ui.separator();
-          ui.heading(format!("Pot {}", self.pot_view));
+          ui.heading(format!("Pot {}", self.pot_inspect));
         });
       });
 
       egui::CentralPanel::default().show(ui, |ui| {
         ui.heading("Temperature");
         ui.add(egui::Slider::new(
-          &mut self.world.pots[self.pot_view].temp,
+          &mut self.world.pots[self.pot_inspect].temp,
           -50.0..=50.0,
         ));
         ui.heading("Moisture");
         ui.add(egui::Slider::new(
-          &mut self.world.pots[self.pot_view].moisture,
-          -50.0..=50.0,
+          &mut self.world.pots[self.pot_inspect].moisture,
+          -0.0..=100.0,
         ));
+
+        let species = all_species_names();
+        egui::ComboBox::from_label("Select one!")
+          .selected_text(format!("{:?}", self.buffer))
+          .show_ui(ui, |ui| {
+            for i in 0..species.len() {
+              ui.selectable_value(&mut self.buffer, species[i].clone(), &species[i]);
+            }
+          });
+
+        if ui.add(egui::Button::new("Add a colony")).clicked() {
+          self.world.pots[self.pot_inspect].add_colony(&self.buffer);
+        }
+        ui.heading("Colonies");
+        let colonies = &self.world.pots[self.pot_inspect].colonies;
+        for colony in colonies {
+          ui.collapsing(&colony.species.name, |ui| {
+            ui.label(format!("Biomass: {}g", colony.biomass));
+            ui.label(format!("Age: {}", colony.age));
+            if ui.add(egui::Button::new("Inspect Species")).clicked() {
+              self.current_menu = Menu::SpeciesInfo;
+              self.species_inspect = colony.species.name.clone();
+            }
+          });
+        }
         if ui.add(egui::Button::new("Return to main menu")).clicked() {
           self.current_menu = Menu::Home;
         }
