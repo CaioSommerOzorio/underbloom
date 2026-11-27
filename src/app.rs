@@ -15,7 +15,7 @@ pub struct Underbloom {
   last_tick: Instant,
   tick_accumulator: Duration,
   current_menu: Menu,
-  pot_view: u64,
+  pot_view: usize,
 }
 
 impl Default for Underbloom {
@@ -29,7 +29,7 @@ impl Default for Underbloom {
       last_tick: Instant::now(),
       tick_accumulator: Duration::ZERO,
       current_menu: Menu::Home,
-      pot_view: u64,
+      pot_view: 0,
     }
   }
 }
@@ -92,6 +92,22 @@ impl eframe::App for Underbloom {
           ui.separator();
           ui.heading(format!("Pot {}", self.pot_view));
         });
+      });
+
+      egui::CentralPanel::default().show(ui, |ui| {
+        ui.heading("Temperature");
+        ui.add(egui::Slider::new(
+          &mut self.world.pots[self.pot_view].temp,
+          -50.0..=50.0,
+        ));
+        ui.heading("Moisture");
+        ui.add(egui::Slider::new(
+          &mut self.world.pots[self.pot_view].moisture,
+          -50.0..=50.0,
+        ));
+        if ui.add(egui::Button::new("Return to main menu")).clicked() {
+          self.current_menu = Menu::Home;
+        }
       });
     }
   }
