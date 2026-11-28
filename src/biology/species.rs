@@ -39,13 +39,13 @@ fn king_spot() -> Species {
   Species {
     name: String::from("King Spot Fungus"),
 
-    optimal_temp: 22.5,
-    temp_resistance: 2.5,
+    optimal_temp: 24.0,
+    temp_resistance: 4.0,
 
-    optimal_moisture: 80.0,
-    moisture_resistance: 5.0,
+    optimal_moisture: 77.5,
+    moisture_resistance: 7.5,
 
-    base_growth_rate: 0.5,
+    base_growth_rate: 1.0,
     substrate_growth: HashMap::from([
       (Substrate::Hardwood, 1.5),
       (Substrate::Softwood, 1.25),

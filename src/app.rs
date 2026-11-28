@@ -77,7 +77,7 @@ impl eframe::App for Underbloom {
       egui::CentralPanel::default().show(ui, |ui| {
         for i in 0..self.world.pots.len() {
           ui.horizontal(|ui| {
-            ui.collapsing(format!("Pot {}", i), |ui| {
+            ui.collapsing(format!("{} pot", self.world.pots[i].name), |ui| {
               ui.label(format!("Temperature: {}", &self.world.pots[i].temp));
               ui.label(format!("Moisture: {}", &self.world.pots[i].moisture));
               if ui.add(egui::Button::new("View pot")).clicked() {
@@ -87,21 +87,25 @@ impl eframe::App for Underbloom {
             });
           });
         }
-        ui.add_space(12.0);
-        if ui.add(egui::Button::new("Add a pot")).clicked() {
-          self.world.add_pot();
-        }
+        ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
+          if ui.add(egui::Button::new("Add a pot")).clicked() {
+            self.world.add_pot();
+          }
+        });
       });
     } else if self.current_menu == Menu::Pot {
       egui::Panel::top("header").show(ui, |ui| {
         ui.horizontal(|ui| {
           ui.heading("Underbloom");
           ui.separator();
-          ui.heading(format!("Pot {}", self.pot_inspect));
+          ui.heading(format!("{} pot", self.world.pots[self.pot_inspect].name));
         });
       });
 
       egui::CentralPanel::default().show(ui, |ui| {
+        ui.add(egui::TextEdit::singleline(
+          &mut self.world.pots[self.pot_inspect].name,
+        ));
         ui.heading("Temperature");
         ui.add(egui::Slider::new(
           &mut self.world.pots[self.pot_inspect].temp,
@@ -113,9 +117,31 @@ impl eframe::App for Underbloom {
           -0.0..=100.0,
         ));
 
+        ui.add_space(24.0);
+        ui.heading("Colonies");
+        let colonies = &self.world.pots[self.pot_inspect].colonies;
+        for i in 0..colonies.len() {
+          let colony = colonies[i].clone();
+          ui.push_id(i, |ui| {
+            ui.collapsing(&colony.species.name, |ui| {
+              if colony.biomass < 1000.0 {
+                ui.label(format!("Biomass: {:.2}g", colony.biomass));
+              } else {
+                ui.label(format!("Biomass: {}kg", colony.biomass / 1000.0));
+              }
+              ui.label(format!("Age: {}", colony.age));
+              ui.label(format!("Growth rate: {}", colony.growth_rate));
+              if ui.add(egui::Button::new("Inspect Species")).clicked() {
+                self.current_menu = Menu::SpeciesInfo;
+                self.species_inspect = colony.species.name.clone();
+              }
+            });
+          });
+        }
+
         let species = all_species_names();
-        egui::ComboBox::from_label("Select one!")
-          .selected_text(format!("{:?}", self.buffer))
+        egui::ComboBox::from_id_salt("species_select")
+          .selected_text(format!("{}", self.buffer))
           .show_ui(ui, |ui| {
             for i in 0..species.len() {
               ui.selectable_value(&mut self.buffer, species[i].clone(), &species[i]);
@@ -125,21 +151,12 @@ impl eframe::App for Underbloom {
         if ui.add(egui::Button::new("Add a colony")).clicked() {
           self.world.pots[self.pot_inspect].add_colony(&self.buffer);
         }
-        ui.heading("Colonies");
-        let colonies = &self.world.pots[self.pot_inspect].colonies;
-        for colony in colonies {
-          ui.collapsing(&colony.species.name, |ui| {
-            ui.label(format!("Biomass: {}g", colony.biomass));
-            ui.label(format!("Age: {}", colony.age));
-            if ui.add(egui::Button::new("Inspect Species")).clicked() {
-              self.current_menu = Menu::SpeciesInfo;
-              self.species_inspect = colony.species.name.clone();
-            }
-          });
-        }
-        if ui.add(egui::Button::new("Return to main menu")).clicked() {
-          self.current_menu = Menu::Home;
-        }
+
+        ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
+          if ui.add(egui::Button::new("Return to main menu")).clicked() {
+            self.current_menu = Menu::Home;
+          }
+        })
       });
     }
   }

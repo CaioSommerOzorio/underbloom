@@ -2,7 +2,9 @@ use crate::biology::colony::Colony;
 use crate::biology::species::all_species;
 use crate::environment::substrate::Substrate;
 
+#[derive(Clone)]
 pub struct Pot {
+  pub name: String,
   pub substrate: Substrate,
   pub moisture: f32,
   pub temp: f32,

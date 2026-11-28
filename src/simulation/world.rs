@@ -9,6 +9,7 @@ pub struct World {
 impl World {
   pub fn add_pot(&mut self) {
     self.pots.push(Pot {
+      name: String::from("pot"),
       substrate: Substrate::Soil,
       moisture: 0.0,
       temp: 0.0,
